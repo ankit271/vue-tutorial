@@ -12,7 +12,9 @@
     <section class="content-section">
       <div class="mission-container">
         <h2>Our Mission</h2>
-        <p>We strive to deliver innovative solutions that transform businesses and enhance user experiences. Our commitment to excellence and cutting-edge technology drives us to create meaningful impact in the digital world.</p>
+        <p>We strive to deliver innovative solutions that transform businesses and enhance user experiences. Our
+          commitment to excellence and cutting-edge technology drives us to create meaningful impact in the digital
+          world.</p>
       </div>
     </section>
 
@@ -49,7 +51,7 @@
       <div class="team-grid">
         <div class="team-member">
           <div class="member-image">
-            <img src="https://via.placeholder.com/150" alt="Team Member">
+            <img src="@/assets/CEO.jpg" alt="Team Member">
           </div>
           <h3>John Doe</h3>
           <p class="position">Chief Executive Officer</p>
@@ -57,7 +59,7 @@
         </div>
         <div class="team-member">
           <div class="member-image">
-            <img src="https://via.placeholder.com/150" alt="Team Member">
+            <img src="@/assets/CTO.jpg" alt="Team Member">
           </div>
           <h3>Jane Smith</h3>
           <p class="position">Chief Technology Officer</p>
@@ -65,7 +67,7 @@
         </div>
         <div class="team-member">
           <div class="member-image">
-            <img src="https://via.placeholder.com/150" alt="Team Member">
+            <img src="@/assets/MD.jpg" alt="Team Member">
           </div>
           <h3>Mike Johnson</h3>
           <p class="position">Head of Design</p>

@@ -6,8 +6,8 @@
         <h1>Transform Your Digital Experience</h1>
         <p class="hero-subtitle">Innovative solutions for modern businesses</p>
         <div class="hero-buttons">
-          <button class="btn primary">Get Started</button>
-          <button class="btn secondary">Learn More</button>
+          <button @click="getStarted" class="btn primary">Get Started</button>
+          <button @click="learnMore" class="btn secondary">Learn More</button>
         </div>
       </div>
       <div class="hero-image">
@@ -93,7 +93,7 @@
       <div class="cta-content">
         <h2>Ready to Get Started?</h2>
         <p>Join thousands of satisfied customers today</p>
-        <button class="btn primary">Contact Us</button>
+        <button @click="contactUs" class="btn primary">Contact Us</button>
       </div>
     </section>
   </div>
@@ -332,8 +332,42 @@
     margin: 0;
   }
 }
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
 </style>
 
 <script setup>
-// Add any required component logic here
+
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const isLoggedIn = ref(false);
+
+const getStarted = () => {
+  // Check if user is logged in
+  if (isLoggedIn.value) {    
+    router.push('/')
+  } else {    
+    router.push('/register')
+  }
+}
+
+const learnMore = () => {
+  router.push('/about')
+}
+
+const contactUs = () =>{
+  router.push('/contact')
+}
+
 </script>
