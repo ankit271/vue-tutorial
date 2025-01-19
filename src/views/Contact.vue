@@ -58,7 +58,7 @@ const alertMessage = ref('');
 const contactUs = async () =>{
   try {
     
-    const response = await fetch(`${import.meta.env.VITE_VUE_API}/contact`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/contact`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

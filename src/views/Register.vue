@@ -1,4 +1,10 @@
 <template>
+     <div v-show="showNotification" class="notification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            {{ notificationMessage }}            
+        </div>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col-md-2"></div>
@@ -10,12 +16,13 @@
                                 <h2>Create Account</h2>
                             </i>
                         </div>
-                        <form @submit.prevent="handleSubmit" class="register-form">
+                        
+                        <div class="register-form">
                             <div class="form-group">
                                 <label for="fullName">Full Name</label>
                                 <div class="input-container">
                                     <i class="fas fa-user"></i>
-                                    <input id="fullName" v-model="formData.fullName" type="text"
+                                    <input id="fullName" v-model="data.fullName" type="text"
                                         placeholder="Enter your full name" :class="{ 'error': errors.fullName }"
                                         @focus="clearError('fullName')" />
                                 </div>
@@ -23,10 +30,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Email Address</label>
+                                <label for="email">Email</label>
                                 <div class="input-container">
                                     <i class="fas fa-envelope"></i>
-                                    <input id="email" v-model="formData.email" type="email"
+                                    <input id="email" v-model="data.email" type="email"
                                         placeholder="Enter your email" :class="{ 'error': errors.email }"
                                         @focus="clearError('email')" />
                                 </div>
@@ -37,7 +44,7 @@
                                 <label for="mobile">Mobile Number</label>
                                 <div class="input-container">
                                     <i class="fas fa-phone"></i>
-                                    <input id="mobile" v-model="formData.mobile" type="tel"
+                                    <input id="mobile" v-model="data.mobile" type="tel"
                                         placeholder="Enter your mobile number" :class="{ 'error': errors.mobile }"
                                         @focus="clearError('mobile')" />
                                 </div>
@@ -48,7 +55,7 @@
                                 <label for="password">Password</label>
                                 <div class="input-container">
                                     <i class="fas fa-lock"></i>
-                                    <input id="password" v-model="formData.password"
+                                    <input id="password" v-model="data.password"
                                         :type="showPassword ? 'text' : 'password'" placeholder="Create a password"
                                         :class="{ 'error': errors.password }" @focus="clearError('password')" />
                                     <i class="fas eye-icon" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
@@ -57,7 +64,8 @@
                                 <span class="error-message" v-if="errors.password">{{ errors.password }}</span>
                             </div>
 
-                            <button type="submit" class="register-button" :disabled="isLoading">
+                            <button type="submit" class="register-button" :disabled="isLoading"
+                                @click="handleSubmit">
                                 <span v-if="!isLoading">Create Account</span>
                                 <span v-else class="loading-spinner"></span>
                             </button>
@@ -66,7 +74,7 @@
                                 Already have an account?
                                 <a href="#" @click.prevent="goToLogin">Login here</a>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,8 +91,10 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const isLoading = ref(false)
 const showPassword = ref(false)
+const showNotification = ref(false)
+const notificationMessage = ref('')
 
-const formData = reactive({
+const data = reactive({
     fullName: '',
     email: '',
     mobile: '',
@@ -102,36 +112,36 @@ const validateForm = () => {
     let isValid = true
 
     // Full Name validation
-    if (!formData.fullName.trim()) {
+    if (!data.fullName.trim()) {
         errors.fullName = 'Full name is required'
         isValid = false
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!formData.email.trim()) {
+    if (!data.email.trim()) {
         errors.email = 'Email is required'
         isValid = false
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.test(data.email)) {
         errors.email = 'Please enter a valid email'
         isValid = false
     }
 
     // Mobile validation
     const mobileRegex = /^\d{10}$/
-    if (!formData.mobile.trim()) {
+    if (!data.mobile.trim()) {
         errors.mobile = 'Mobile number is required'
         isValid = false
-    } else if (!mobileRegex.test(formData.mobile)) {
+    } else if (!mobileRegex.test(data.mobile)) {
         errors.mobile = 'Please enter a valid 10-digit mobile number'
         isValid = false
     }
 
     // Password validation
-    if (!formData.password) {
+    if (!data.password) {
         errors.password = 'Password is required'
         isValid = false
-    } else if (formData.password.length < 8) {
+    } else if (data.password.length < 8) {
         errors.password = 'Password must be at least 8 characters'
         isValid = false
     }
@@ -144,9 +154,25 @@ const handleSubmit = async () => {
 
     isLoading.value = true
     try {
-        // Add your registration API call here
-        await new Promise(resolve => setTimeout(resolve, 1500)) // Simulated API call
-        router.push('/dashboard')
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to submit...');
+        }
+
+        const result = await response.json();
+        showSuccessMessage(result.message);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        router.push('/home');
+        
     } catch (error) {
         console.error('Registration error:', error)
     } finally {
@@ -160,6 +186,11 @@ const clearError = (field) => {
 
 const togglePassword = () => {
     showPassword.value = !showPassword.value
+}
+
+const showSuccessMessage = (message) => {
+    notificationMessage.value = message
+    showNotification.value = true   
 }
 
 const goToLogin = () => {
@@ -325,4 +356,84 @@ input.error {
         padding: 10px 35px;
     }
 }
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification-content {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-content i {
+    font-size: 1.2em;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification.hide {
+    animation: slideOut 0.5s ease-in forwards;
+}
+
+.notification-content {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    animation: progress 3s linear;
+}
+
+@keyframes progress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+
 </style>

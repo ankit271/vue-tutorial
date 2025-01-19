@@ -56,15 +56,9 @@
                             <div class="social-login">
                                 <p>Or continue with</p>
                                 <div class="social-buttons">
-                                    <button type="button" class="social-button google">
+                                    <button type="button" @click="handleGoogleLogin" class="social-button google">
                                         <i class="fab fa-google"></i>
-                                    </button>
-                                    <button type="button" class="social-button facebook">
-                                        <i class="fab fa-facebook-f"></i>
-                                    </button>
-                                    <button type="button" class="social-button twitter">
-                                        <i class="fab fa-twitter"></i>
-                                    </button>
+                                    </button>                                                                      
                                 </div>
                             </div>
 
@@ -85,6 +79,39 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { googleTokenLogin } from 'vue3-google-login'
+const userData = ref(null)
+
+const handleGoogleLogin = async () => {
+  try {
+    
+    const response = await googleTokenLogin({
+        flow: 'auth-code'
+    })
+    
+    const { access_token } = response
+        
+    // Fetch user info using the access token
+    const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+            'Authorization': `Bearer ${access_token}`
+        }
+    })
+    
+    const data = await userInfo.json()
+        
+    userData.value = {
+        name: data.name,
+        email: data.email,
+        picture: data.picture
+    }
+
+    console.log('User logged in:', userData.value)
+  } catch (error) {
+    console.error('Error logging in:', error)
+  }
+}
+
 
 const router = useRouter()
 const isLoading = ref(false)

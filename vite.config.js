@@ -9,7 +9,13 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
-  ],  
+  ], 
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    }
+  }, 
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
